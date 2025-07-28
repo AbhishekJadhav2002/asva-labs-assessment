@@ -9,7 +9,7 @@ async function startServer() {
     loadEnvFile()
 
     await connectRedis()
-    await connectKafka(1)
+    await connectKafka(5)
 
     const app = createApp()
 

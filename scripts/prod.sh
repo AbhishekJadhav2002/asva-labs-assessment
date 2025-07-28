@@ -34,9 +34,9 @@ echo "🌍 Setting NODE_ENV to production..."
 export NODE_ENV=production
 
 # Stop existing containers
-# echo "🛑 Stopping existing containers..."
-# docker compose -f docker-compose.yml down
-# docker compose -f docker-compose.yml down 2>/dev/null || true
+echo "🛑 Stopping existing containers..."
+docker compose -f docker-compose.yml down
+docker compose -f docker-compose.yml down 2>/dev/null || true
 
 # Remove stale networks safely
 echo "🧹 Cleaning Docker networks..."
@@ -58,7 +58,7 @@ docker compose -f docker-compose.yml up -d postgres redis kafka
 
 # Wait for services to be ready
 echo "⏳ Waiting for infrastructure services..."
-sleep 10
+sleep 30
 
 # Run database migrations
 echo "🗄️  Running database migrations..."
