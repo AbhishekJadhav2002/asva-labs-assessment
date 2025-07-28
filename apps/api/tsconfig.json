@@ -1,0 +1,48 @@
+{
+    "extends": "@asva-labs-assessment/typescript-config/node.json",
+    "compilerOptions": {
+        "outDir": "build",
+        "rootDir": "src",
+        "baseUrl": ".",
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "paths": {
+            "@/prisma/*": [
+                "./prisma/*"
+            ],
+            "@/tests/*": [
+                "./tests/*"
+            ],
+            "@/src/*": [
+                "./src/*"
+            ],
+            "@/config/*": [
+                "./src/config/*"
+            ],
+            "@/controllers/*": [
+                "./src/controllers/*"
+            ],
+            "@/routes/*": [
+                "./src/routes/*"
+            ],
+            "@/services/*": [
+                "./src/services/*"
+            ],
+            "@/middleware/*": [
+                "./src/middleware/*"
+            ],
+            "@/utils/*": [
+                "./src/utils/*"
+            ]
+        }
+    },
+    "include": [
+        "./src/**/*.ts",
+        "./prisma/**/*.ts",
+        "./tests/**/*.ts",
+    ],
+    "exclude": [
+        "node_modules",
+        "build"
+    ]
+}

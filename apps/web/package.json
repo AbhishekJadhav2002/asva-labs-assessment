@@ -1,0 +1,51 @@
+{
+  "name": "@asva-labs-assessment/web",
+  "version": "1.0.0",
+  "description": "Project Management Frontend",
+  "private": true,
+  "scripts": {
+    "build": "rm -rf .next && next build",
+    "dev": "next dev",
+    "start": "next start",
+    "type-check": "tsc --noEmit",
+    "lint:rules": "eslint . --cache",
+    "lint:code-format": "prettier --check \"{src,__mocks__}/**/*.{js,json,md,ts,tsx,yml,yaml}\"",
+    "lint": "npm run lint:rules && npm run lint:code-format && npm run type-check",
+    "lint:fix": "npm run lint:rules -- --fix",
+    "format": "npm run lint:code-format --write",
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^5.2.0",
+    "@tanstack/react-query": "^5.83.0",
+    "axios": "^1.11.0",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
+    "js-cookie": "^3.0.5",
+    "lucide-react": "^0.532.0",
+    "next": "^15.4.4",
+    "postcss": "^8.5.6",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "react-hook-form": "^7.61.1",
+    "react-hot-toast": "^2.5.2",
+    "tailwind-merge": "^3.3.1",
+    "zod": "^4.0.10"
+  },
+  "devDependencies": {
+    "@asva-labs-assessment/eslint-config": "*",
+    "@asva-labs-assessment/prettier-config": "*",
+    "@asva-labs-assessment/typescript-config": "*",
+    "@tailwindcss/postcss": "^4.1.11",
+    "@types/js-cookie": "^3.0.6",
+    "@types/node": "^24.1.0",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "autoprefixer": "^10.4.21",
+    "eslint-config-next": "^15.4.4",
+    "prettier-plugin-tailwindcss": "^0.6.14",
+    "tailwindcss": "^4.1.11",
+    "typescript": "^5.8.3"
+  }
+}

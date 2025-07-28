@@ -1,0 +1,20 @@
+node_modules
+logs
+
+# Build outputs
+!build/
+dist/
+!.next/
+out/
+
+# Temporary files
+tmp/
+temp/
+
+# Miscellaneous
+.DS_Store
+
+Thumbs.db
+
+# Docker
+.dockerignore

@@ -1,0 +1,79 @@
+{
+  "name": "asva-labs-assessment",
+  "version": "1.0.0",
+  "description": "Project Management Platform",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AbhishekJadhav2002/asva-labs-assessment.git"
+  },
+  "license": "MIT",
+  "author": "Abhishek Jadhav <email.abhishekjadhav.com>",
+  "workspaces": [
+    "apps/**",
+    "packages/**"
+  ],
+  "scripts": {
+    "api:dev": "npm run dev -w=@asva-labs-assessment/api",
+    "web:dev": "npm run dev -w=@asva-labs-assessment/web",
+    "all:dev": "concurrently \"npm run api:dev\" \"npm run web:dev\"",
+    "api:build": "npm run build -w=@asva-labs-assessment/api",
+    "web:build": "npm run build -w=@asva-labs-assessment/web",
+    "all:build": "concurrently \"npm run api:build\" \"npm run web:build\"",
+    "api:prod": "npm run prod -w=@asva-labs-assessment/api",
+    "web:prod": "npm run prod -w=@asva-labs-assessment/web",
+    "all:prod": "concurrently \"npm run api:prod\" \"npm run web:prod\"",
+    "build": "./scripts/build.sh",
+    "dev": "./scripts/dev.sh",
+    "prod": "./scripts/prod.sh",
+    "clean": "./scripts/clean.sh",
+    "upgrade:deps": "npx npm-check-updates@latest -i && npm exec --workspaces -- npx npm-check-updates@latest -i",
+    "lint": "eslint . --max-warnings 0 --cache",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "type-check": "tsc --noEmit --composite false",
+    "test": "npm run test --workspaces",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@asva-labs-assessment/eslint-config": "*",
+    "@asva-labs-assessment/prettier-config": "*",
+    "@asva-labs-assessment/typescript-config": "*",
+    "@ianvs/prettier-plugin-sort-imports": "^4.5.1",
+    "@types/node": "^24.1.0",
+    "@typescript-eslint/eslint-plugin": "^8.38.0",
+    "@typescript-eslint/parser": "^8.38.0",
+    "concurrently": "^9.2.0",
+    "dotenv-cli": "^9.0.0",
+    "eslint": "^9.32.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-perfectionist": "^4.15.0",
+    "eslint-plugin-security": "^3.0.1",
+    "eslint-plugin-unicorn": "^60.0.0",
+    "eslint-plugin-unused-imports": "^4.1.4",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.2",
+    "prettier": "^3.6.2",
+    "prettier-plugin-tailwindcss": "^0.6.14",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.38.0"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "lint-staged": {
+    "apps/**/*.{ts,tsx,js,jsx}": [
+      "npm run lint:fix -w=apps/api -w=apps/web",
+      "bash -c 'npm run type-check -w=apps/api -w=apps/web'"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
+  }
+}

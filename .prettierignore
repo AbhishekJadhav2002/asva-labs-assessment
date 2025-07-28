@@ -1,0 +1,13 @@
+.husky
+.eslintignore
+*.log
+node_modules
+**/.next/**
+**/_next/**
+**/dist/**
+**/public/**
+**/build/**
+**/logs/**
+**/tsconfig*.json
+**/.prettierrc.cjs
+**/.prettierrc.js

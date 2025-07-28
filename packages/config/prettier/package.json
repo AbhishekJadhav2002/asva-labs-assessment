@@ -1,0 +1,13 @@
+{
+  "name": "@asva-labs-assessment/prettier-config",
+  "version": "1.0.0",
+  "description": "Shared Prettier configuration",
+  "type": "module",
+  "main": "index.js",
+  "files": [
+    "index.js"
+  ],
+  "peerDependencies": {
+    "prettier": ">=3.0.0"
+  }
+}

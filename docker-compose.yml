@@ -1,0 +1,164 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:17-alpine
+    container_name: pm_postgres_prod
+    environment:
+      POSTGRES_DB: project_management
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin123}
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_prod_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U admin -d project_management']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - pm_network
+    restart: unless-stopped
+
+  # Redis Cache
+  redis:
+    image: redis:7.4.5-alpine
+    container_name: pm_redis_prod
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_prod_data:/data
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis123}
+    healthcheck:
+      test: ['CMD', 'redis-cli', '--no-auth-warning', '-a', '${REDIS_PASSWORD:-redis123}', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - pm_network
+    restart: unless-stopped
+
+  # Kafka Message Broker
+  kafka:
+    image: bitnami/kafka:latest
+    container_name: pm_kafka_prod
+    ports:
+      - '9092:9092'
+    environment:
+      # KRaft configuration
+      KAFKA_CFG_NODE_ID: 1
+      KAFKA_CFG_PROCESS_ROLES: controller,broker
+      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_CFG_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CFG_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+
+      # Single node settings
+      KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CFG_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_CFG_TRANSACTION_STATE_LOG_MIN_ISR: 1
+
+      KAFKAJS_NO_PARTITIONER_WARNING: 'true'
+
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: true
+      KAFKA_NUM_PARTITIONS: 1
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 1
+    volumes:
+      - kafka_prod_data:/kafka
+    healthcheck:
+      test: ['CMD', 'kafka-topics.sh', '--bootstrap-server', 'localhost:9092', '--list']
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    networks:
+      - pm_network
+    restart: unless-stopped
+
+  # Backend API Service
+  api:
+    build:
+      context: .
+      dockerfile: ./apps/api/Dockerfile
+      target: production
+    container_name: pm_api_prod
+    environment:
+      NODE_ENV: production
+      API_PORT: ${API_PORT:-3001}
+      DATABASE_URL: postgresql://admin:${POSTGRES_PASSWORD:-admin123}@postgres:5432/project_management
+      REDIS_URL: redis://:${REDIS_PASSWORD:-redis123}@redis:6379
+      KAFKA_BROKERS: ${KAFKA_BROKERS:-kafka:9092}
+      JWT_SECRET: ${JWT_SECRET:-jwt_secret}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-jwt_refresh_secret}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    volumes:
+      - api_logs:/app/apps/api/logs
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    networks:
+      - pm_network
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'wget', '--no-verbose', '--tries=1', '--spider', 'http://localhost:3001/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Frontend Web Application
+  web:
+    build:
+      context: .
+      dockerfile: ./apps/web/Dockerfile
+      target: production
+      args:
+        NEXT_PUBLIC_API_URL: '/api'
+    container_name: pm_web_prod
+    environment:
+      NODE_ENV: production
+    depends_on:
+      - api
+    networks:
+      - pm_network
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'wget', '--no-verbose', '--tries=1', '--spider', 'http://localhost:3000']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:1.28.0-alpine
+    container_name: pm_nginx_prod
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./nginx/nginx.prod.conf:/etc/nginx/nginx.conf:ro
+      # - ./nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - api
+      - web
+    networks:
+      - pm_network
+    restart: unless-stopped
+    profiles:
+      - production
+
+volumes:
+  postgres_prod_data:
+  redis_prod_data:
+  zookeeper_prod_data:
+  zookeeper_prod_logs:
+  kafka_prod_data:
+  api_logs:
+
+networks:
+  pm_network:
+    driver: bridge

@@ -1,0 +1,30 @@
+{
+    "compilerOptions": {
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "baseUrl": "./build",
+        "paths": {
+            "@/config/*": [
+                "config/*"
+            ],
+            "@/controllers/*": [
+                "controllers/*"
+            ],
+            "@/routes/*": [
+                "routes/*"
+            ],
+            "@/services/*": [
+                "services/*"
+            ],
+            "@/middleware/*": [
+                "middleware/*"
+            ],
+            "@/utils/*": [
+                "utils/*"
+            ],
+            "@/prisma/*": [
+                "../prisma/*"
+            ]
+        }
+    }
+}

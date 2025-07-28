@@ -1,0 +1,11 @@
+{
+  "name": "@asva-labs-assessment/typescript-config",
+  "version": "1.0.0",
+  "description": "Shared TypeScript configurations",
+  "files": [
+    "*.json"
+  ],
+  "peerDependencies": {
+    "typescript": ">=5.0.0"
+  }
+}
